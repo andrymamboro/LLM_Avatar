@@ -42,10 +42,6 @@ RUN printf '%s\n' \
   'elif [ -f "/app/conf.yaml" ]; then' \
   '  echo "Using default repository conf.yaml"' \
   '  export CONFIG_FILE=/app/conf.yaml' \
-  'elif [ -f "/app/conf.yaml.example" ]; then' \
-  '  echo "No conf.yaml found. Copying conf.yaml.example..."' \
-  '  cp /app/conf.yaml.example /app/conf.yaml' \
-  '  export CONFIG_FILE=/app/conf.yaml' \
   'else' \
   '  echo "ERROR: conf.yaml not found."' \
   '  exit 1' \
