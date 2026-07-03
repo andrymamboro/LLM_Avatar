@@ -311,6 +311,12 @@
         background-attachment: fixed !important;
       }
 
+      /* Set React root stacking context higher than the 3D avatar container */
+      #root {
+        position: relative;
+        z-index: 10;
+      }
+
       /* Futuristic blue theme panel overrides */
       .cs-main-container,
       .cs-chat-container,

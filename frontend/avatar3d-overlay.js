@@ -58,7 +58,7 @@ function ensureOverlayRoot() {
   root.style.top = '16px';
   root.style.width = '380px';
   root.style.height = '520px';
-  root.style.zIndex = '99999';
+  root.style.zIndex = '9';
   root.style.pointerEvents = 'none';
   root.style.borderRadius = '20px';
   root.style.overflow = 'hidden';
