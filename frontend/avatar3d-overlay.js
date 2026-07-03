@@ -66,21 +66,6 @@ function ensureOverlayRoot() {
   root.style.background = 'radial-gradient(circle at top, #20304f 0%, #101725 60%, #050816 100%)';
   root.style.position = 'fixed';
 
-  const label = document.createElement('div');
-  label.id = 'andry-3d-overlay-label';
-  label.textContent = '3D: ' + DEFAULT_MODEL_NAME;
-  label.style.position = 'absolute';
-  label.style.left = '14px';
-  label.style.top = '14px';
-  label.style.padding = '6px 10px';
-  label.style.borderRadius = '999px';
-  label.style.background = 'rgba(15, 23, 42, 0.72)';
-  label.style.color = '#fff';
-  label.style.fontSize = '12px';
-  label.style.letterSpacing = '0.04em';
-  label.style.backdropFilter = 'blur(8px)';
-
-  root.appendChild(label);
   document.body.appendChild(root);
 
   state.root = root;
