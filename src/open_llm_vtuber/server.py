@@ -26,6 +26,14 @@ class CORSStaticFiles(StarletteStaticFiles):
     Needed because Starlette StaticFiles might bypass standard middleware.
     """
 
+    async def __call__(self, scope, receive, send) -> None:
+        if scope["type"] != "http":
+            if scope["type"] == "websocket":
+                await send({"type": "websocket.close", "code": 1008})
+            return
+        await super().__call__(scope, receive, send)
+
+
     async def get_response(self, path: str, scope):
         response = await super().get_response(path, scope)
 
