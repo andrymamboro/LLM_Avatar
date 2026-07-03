@@ -91,3 +91,4 @@ wget-log*
 *.wav
 *.wasm
 *.ico
+* copy.js
