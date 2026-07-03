@@ -80,10 +80,10 @@ RUN printf '%s\n' \
   'fi' \
   'if [ ! -f "/app/frontend/libs/ort-wasm-simd.wasm" ]; then' \
   '  echo "Downloading ONNX Runtime WebAssembly files..."' \
-  '  curl -L -o /app/frontend/libs/ort-wasm-simd.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort-wasm-simd.wasm' \
-  '  curl -L -o /app/frontend/libs/ort-wasm-simd-threaded.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort-wasm-simd-threaded.wasm' \
-  '  curl -L -o /app/frontend/libs/ort-wasm-threaded.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort-wasm-threaded.wasm' \
-  '  curl -L -o /app/frontend/libs/ort-wasm.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort-wasm.wasm' \
+  '  curl -L -o /app/frontend/libs/ort-wasm-simd.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/ort-wasm-simd.wasm' \
+  '  curl -L -o /app/frontend/libs/ort-wasm-simd-threaded.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/ort-wasm-simd-threaded.wasm' \
+  '  curl -L -o /app/frontend/libs/ort-wasm-threaded.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/ort-wasm-threaded.wasm' \
+  '  curl -L -o /app/frontend/libs/ort-wasm.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/ort-wasm.wasm' \
   'fi' \
   '' \
   '# 8) start app' \

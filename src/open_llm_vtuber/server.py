@@ -36,6 +36,10 @@ class CORSStaticFiles(StarletteStaticFiles):
 
         if path.endswith(".js"):
             response.headers["Content-Type"] = "application/javascript"
+        elif path.endswith(".wasm"):
+            response.headers["Content-Type"] = "application/wasm"
+        elif path.endswith(".onnx"):
+            response.headers["Content-Type"] = "application/octet-stream"
 
         return response
 
