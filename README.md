@@ -1,3 +1,13 @@
+---
+title: LLM Avatar
+emoji: 💬
+colorFrom: purple
+colorTo: blue
+sdk: docker
+app_port: 12393
+pinned: false
+---
+
 # LLM_Avatar (Open-LLM-VTuber Kustom) - v1.2.1
 
 Proyek ini adalah versi kustomisasi dari **Open-LLM-VTuber** (asisten suara virtual interaktif AI dengan avatar Live2D) yang dikembangkan untuk kebutuhan khusus dengan penyesuaian gaya antarmuka (UI) dan perbaikan bug model backend.
