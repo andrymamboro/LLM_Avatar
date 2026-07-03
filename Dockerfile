@@ -5,7 +5,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     UV_LINK_MODE=copy \
-    CONFIG_FILE=/app/conf/conf.yaml
+    CONFIG_FILE=/app/conf/conf.yaml \
+    HOST=0.0.0.0
 
 WORKDIR /app
 
@@ -72,7 +73,21 @@ RUN printf '%s\n' \
   '  rm -rf /app/backgrounds && ln -s /app/conf/backgrounds /app/backgrounds' \
   'fi' \
   '' \
-  '# 7) start app' \
+  '# 7) Download VAD and WASM files if missing' \
+  'mkdir -p /app/frontend/libs' \
+  'if [ ! -f "/app/frontend/libs/silero_vad_v5.onnx" ]; then' \
+  '  echo "Downloading Silero VAD model..."' \
+  '  curl -L -o /app/frontend/libs/silero_vad_v5.onnx https://unpkg.com/@ricky0123/vad-web@0.0.18/dist/silero_vad_v5.onnx' \
+  'fi' \
+  'if [ ! -f "/app/frontend/libs/ort-wasm-simd.wasm" ]; then' \
+  '  echo "Downloading ONNX Runtime WebAssembly files..."' \
+  '  curl -L -o /app/frontend/libs/ort-wasm-simd.wasm https://unpkg.com/onnxruntime-web@1.19.2/dist/ort-wasm-simd.wasm' \
+  '  curl -L -o /app/frontend/libs/ort-wasm-simd-threaded.wasm https://unpkg.com/onnxruntime-web@1.19.2/dist/ort-wasm-simd-threaded.wasm' \
+  '  curl -L -o /app/frontend/libs/ort-wasm-threaded.wasm https://unpkg.com/onnxruntime-web@1.19.2/dist/ort-wasm-threaded.wasm' \
+  '  curl -L -o /app/frontend/libs/ort-wasm.wasm https://unpkg.com/onnxruntime-web@1.19.2/dist/ort-wasm.wasm' \
+  'fi' \
+  '' \
+  '# 8) start app' \
   'exec uv run run_server.py' \
   > /usr/local/bin/start-app && chmod +x /usr/local/bin/start-app
 
