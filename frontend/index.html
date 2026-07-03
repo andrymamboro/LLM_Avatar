@@ -302,6 +302,15 @@
         }
       }
 
+      /* Apply background image directly to page body for full transparency overlay */
+      body, html {
+        background-image: url('/jpg/default_background.jpg') !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        background-attachment: fixed !important;
+      }
+
       /* Futuristic blue theme panel overrides */
       .cs-main-container,
       .cs-chat-container,
