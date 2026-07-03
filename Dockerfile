@@ -5,8 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     UV_LINK_MODE=copy \
-    CONFIG_FILE=/app/conf/conf.yaml \
-    HOST=0.0.0.0
+    CONFIG_FILE=/app/conf/conf.yaml
 
 WORKDIR /app
 
@@ -43,10 +42,6 @@ RUN printf '%s\n' \
   'elif [ -f "/app/conf.yaml" ]; then' \
   '  echo "Using default repository conf.yaml"' \
   '  export CONFIG_FILE=/app/conf.yaml' \
-  'elif [ -f "/app/conf.yaml.example" ]; then' \
-  '  echo "No conf.yaml found. Copying conf.yaml.example..."' \
-  '  cp /app/conf.yaml.example /app/conf.yaml' \
-  '  export CONFIG_FILE=/app/conf.yaml' \
   'else' \
   '  echo "ERROR: conf.yaml not found."' \
   '  exit 1' \
@@ -81,14 +76,14 @@ RUN printf '%s\n' \
   'mkdir -p /app/frontend/libs' \
   'if [ ! -f "/app/frontend/libs/silero_vad_v5.onnx" ]; then' \
   '  echo "Downloading Silero VAD model..."' \
-  '  curl -L -o /app/frontend/libs/silero_vad_v5.onnx https://unpkg.com/@ricky0123/vad-web@0.0.18/dist/silero_vad_v5.onnx' \
+  '  curl -L -o /app/frontend/libs/silero_vad_v5.onnx https://unpkg.com/@ricky0123/vad-web/dist/silero_vad_v5.onnx' \
   'fi' \
   'if [ ! -f "/app/frontend/libs/ort-wasm-simd.wasm" ]; then' \
   '  echo "Downloading ONNX Runtime WebAssembly files..."' \
-  '  curl -L -o /app/frontend/libs/ort-wasm-simd.wasm https://unpkg.com/onnxruntime-web@1.19.2/dist/ort-wasm-simd.wasm' \
-  '  curl -L -o /app/frontend/libs/ort-wasm-simd-threaded.wasm https://unpkg.com/onnxruntime-web@1.19.2/dist/ort-wasm-simd-threaded.wasm' \
-  '  curl -L -o /app/frontend/libs/ort-wasm-threaded.wasm https://unpkg.com/onnxruntime-web@1.19.2/dist/ort-wasm-threaded.wasm' \
-  '  curl -L -o /app/frontend/libs/ort-wasm.wasm https://unpkg.com/onnxruntime-web@1.19.2/dist/ort-wasm.wasm' \
+  '  curl -L -o /app/frontend/libs/ort-wasm-simd.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort-wasm-simd.wasm' \
+  '  curl -L -o /app/frontend/libs/ort-wasm-simd-threaded.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort-wasm-simd-threaded.wasm' \
+  '  curl -L -o /app/frontend/libs/ort-wasm-threaded.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort-wasm-threaded.wasm' \
+  '  curl -L -o /app/frontend/libs/ort-wasm.wasm https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort-wasm.wasm' \
   'fi' \
   '' \
   '# 8) start app' \
