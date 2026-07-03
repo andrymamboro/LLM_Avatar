@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Avatar</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/web-tool/libs/build/three.module.js"
+        }
+      }
+    </script>
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+      }
+
+      #avatarCanvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      #avatarLabel {
+        display: none;
+      }
+
+      #avatarStatus {
+        display: none;
+      }
+
+      audio {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="avatarCanvas"></div>
+    <div id="avatarLabel">3D: andry_3d</div>
+    <div id="avatarStatus">Loading</div>
+    <audio id="audioPlayer" controls></audio>
+    <script type="module" src="/web-tool/avatar3d.js"></script>
+  </body>
+</html>
