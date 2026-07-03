@@ -50,6 +50,17 @@
       } catch (e) {
         localStorage.setItem('modelInfo', JSON.stringify({ characters: [{ name: 'andry_3d', model_path: 'live3d-model/andry_3d/avatar_animasi.glb' }] }));
       }
+
+      // Reset stale backgroundUrl to ensure the new default_background.jpg is used
+      try {
+        const bgUrl = localStorage.getItem('backgroundUrl');
+        if (bgUrl) {
+          const parsed = JSON.parse(bgUrl);
+          if (typeof parsed === 'string' && (parsed.includes('ceiling-window-room-night') || parsed.includes('back_2.jpg') || parsed.includes('ceiling-window-room-night.jpeg'))) {
+            localStorage.removeItem('backgroundUrl');
+          }
+        }
+      } catch (e) {}
     </script>
     <script>
       // capture console calls for debugging
@@ -289,6 +300,67 @@
           box-shadow: 0 0 22px rgba(0, 242, 254, 0.8), inset 0 0 12px rgba(255, 255, 255, 0.4);
           transform: scale(1.03);
         }
+      }
+
+      /* Futuristic blue theme panel overrides */
+      .cs-main-container,
+      .cs-chat-container,
+      .cs-message-list,
+      .cs-conversation-header,
+      .cs-message-input,
+      .cs-sidebar,
+      .cs-sidebar--left,
+      .cs-sidebar--right,
+      .cs-conversation,
+      .cs-expansion-panel,
+      .cs-expansion-panel__header,
+      .cs-expansion-panel__content,
+      .cs-status-list {
+        background-color: rgba(10, 20, 42, 0.65) !important;
+        background: linear-gradient(135deg, rgba(10, 20, 42, 0.7) 0%, rgba(5, 8, 22, 0.85) 100%) !important;
+        color: #00f2fe !important;
+        border-color: rgba(0, 242, 254, 0.15) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+      }
+
+      /* Non-active list items hover/active state */
+      .cs-conversation:hover {
+        background-color: rgba(0, 242, 254, 0.1) !important;
+      }
+      .cs-conversation.cs-conversation--active {
+        background-color: rgba(0, 242, 254, 0.18) !important;
+        color: #00f2fe !important;
+      }
+
+      /* Chat bubble styling matching the futuristic canvas background */
+      .cs-message--incoming .cs-message__content {
+        background-color: rgba(0, 242, 254, 0.12) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(0, 242, 254, 0.35) !important;
+        box-shadow: 0 0 12px rgba(0, 242, 254, 0.2) !important;
+      }
+      .cs-message--outgoing .cs-message__content {
+        background-color: rgba(248, 87, 166, 0.15) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(248, 87, 166, 0.35) !important;
+        box-shadow: 0 0 12px rgba(248, 87, 166, 0.2) !important;
+      }
+
+      /* Text color fixes for text nodes */
+      .cs-conversation__name,
+      .cs-conversation-header__user-name,
+      .cs-message__sender-name {
+        color: #00f2fe !important;
+        font-family: 'Share Tech Mono', monospace !important;
+      }
+      .cs-conversation__info,
+      .cs-conversation-header__info,
+      .cs-message__sent-time {
+        color: rgba(255, 255, 255, 0.6) !important;
+      }
+      .cs-message__content {
+        color: #ffffff !important;
       }
     </style>
   </head>
