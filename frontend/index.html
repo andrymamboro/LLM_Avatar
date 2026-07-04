@@ -302,15 +302,6 @@
         }
       }
 
-      /* Apply background image directly to page body for full transparency overlay */
-      body, html {
-        background-image: url('/jpg/default_background.jpg') !important;
-        background-size: cover !important;
-        background-position: center !important;
-        background-repeat: no-repeat !important;
-        background-attachment: fixed !important;
-      }
-
       /* Futuristic blue theme panel overrides */
       .cs-main-container,
       .cs-chat-container,
@@ -325,8 +316,8 @@
       .cs-expansion-panel__header,
       .cs-expansion-panel__content,
       .cs-status-list {
-        background-color: rgba(10, 20, 42, 0.15) !important;
-        background: transparent !important;
+        background-color: rgba(10, 20, 42, 0.65) !important;
+        background: linear-gradient(135deg, rgba(10, 20, 42, 0.7) 0%, rgba(5, 8, 22, 0.85) 100%) !important;
         color: #00f2fe !important;
         border-color: rgba(0, 242, 254, 0.15) !important;
         backdrop-filter: blur(12px) !important;
