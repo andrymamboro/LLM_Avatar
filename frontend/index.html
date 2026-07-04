@@ -362,6 +362,38 @@
       .cs-message__content {
         color: #ffffff !important;
       }
+
+      /* Neon Box style for all buttons and icons in frontend */
+      .cs-button, 
+      .cs-message-input__tools button,
+      .cs-conversation-header__actions button,
+      .cs-message-input__tools .cs-button {
+        border: 1.5px solid #00f2fe !important;
+        background: rgba(0, 242, 254, 0.08) !important;
+        box-shadow: 0 0 8px rgba(0, 242, 254, 0.5), inset 0 0 4px rgba(0, 242, 254, 0.25) !important;
+        border-radius: 6px !important;
+        transition: all 0.2s ease-in-out !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+      
+      .cs-button:hover, 
+      .cs-message-input__tools button:hover,
+      .cs-conversation-header__actions button:hover {
+        background: rgba(0, 242, 254, 0.2) !important;
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.9), inset 0 0 6px rgba(0, 242, 254, 0.4) !important;
+        transform: scale(1.05);
+      }
+
+      /* Make SVG icons glow like neon lights */
+      .cs-button svg, 
+      button svg, 
+      .svg-inline--fa, 
+      svg {
+        color: #00f2fe !important;
+        filter: drop-shadow(0 0 2px #00f2fe) drop-shadow(0 0 5px #00f2fe) !important;
+      }
     </style>
   </head>
 
