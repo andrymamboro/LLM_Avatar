@@ -194,7 +194,7 @@ function fitModel(root) {
   const center = box.getCenter(new THREE.Vector3());
 
   root.position.x -= center.x;
-  root.position.y -= center.y - size.y * 0.42;
+  root.position.y -= center.y - size.y * 0.42 - 0.35;
   root.position.z -= center.z;
 
   const maxAxis = Math.max(size.x, size.y, size.z) || 1;
