@@ -1,426 +1,453 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <title>Open-LLM-Vtuber</title>
-    <script>
-      // Early audio interception
-      (function() {
-        window.__audioElements = window.__audioElements || [];
-        
-        try {
-          const OriginalAudio = window.Audio;
-          window.Audio = class extends OriginalAudio {
-            constructor(...args) {
-              super(...args);
-              console.log('[early-audio] Intercepted new Audio()', this);
-              window.__audioElements.push(this);
-              if (typeof window.__onAudioCreated === 'function') {
-                window.__onAudioCreated(this);
-              }
-            }
-          };
 
-          const originalCreateElement = document.createElement;
-          document.createElement = function(tagName, options) {
-            const element = originalCreateElement.call(document, tagName, options);
-            if (tagName && tagName.toLowerCase() === 'audio') {
-              console.log('[early-audio] Intercepted document.createElement("audio")', element);
-              window.__audioElements.push(element);
-              if (typeof window.__onAudioCreated === 'function') {
-                window.__onAudioCreated(element);
-              }
-            }
-            return element;
-          };
-          console.log('[early-audio] Successfully installed audio monkeypatches');
-        } catch (e) {
-          console.error('[early-audio] Failed to install audio monkeypatches', e);
-        }
-      })();
-    </script>
-    <script>
-      // Sanitize localStorage.modelInfo to avoid parse errors in the bundle.
-      try {
-        const raw = localStorage.getItem('modelInfo');
-        if (raw === null || raw === 'undefined') throw new Error('invalid');
-        JSON.parse(raw);
-      } catch (e) {
-        localStorage.setItem('modelInfo', JSON.stringify({ characters: [{ name: 'andry_3d', model_path: 'live3d-model/andry_3d/avatar_animasi.glb' }] }));
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <title>Open-LLM-Vtuber</title>
+  <script>
+    // Early audio interception
+    (function () {
+      window.__audioElements = window.__audioElements || [];
 
-      // Reset stale backgroundUrl to ensure the new default_background.jpg is used
       try {
-        const bgUrl = localStorage.getItem('backgroundUrl');
-        if (bgUrl) {
-          const parsed = JSON.parse(bgUrl);
-          if (typeof parsed === 'string' && (parsed.includes('ceiling-window-room-night') || parsed.includes('back_2.jpg') || parsed.includes('ceiling-window-room-night.jpeg'))) {
-            localStorage.removeItem('backgroundUrl');
+        const OriginalAudio = window.Audio;
+        window.Audio = class extends OriginalAudio {
+          constructor(...args) {
+            super(...args);
+            console.log('[early-audio] Intercepted new Audio()', this);
+            window.__audioElements.push(this);
+            if (typeof window.__onAudioCreated === 'function') {
+              window.__onAudioCreated(this);
+            }
           }
-        }
-      } catch (e) {}
-    </script>
-    <script>
-      // capture console calls for debugging
-      (function(){
-        window.__consoleLogs = window.__consoleLogs || [];
-        ['log','warn','error','info'].forEach((k)=>{
-          const orig = console[k];
-          console[k] = function(){
-            try{ window.__consoleLogs.push({type:k, args: Array.from(arguments)}); } catch(e){}
-            orig && orig.apply(console, arguments);
-          };
-        });
-      })();
-    </script>
-    <script src="/frontend-config.js"></script>
-    <script type="module" crossorigin src="./assets/main-nu7uwxNJ.js?v=20260703-new4"></script>
-    <link rel="stylesheet" crossorigin href="./assets/main-QEkl09-0.css?v=20260703-new4">
-    <style>
-      /* Futuristic styling for mic button, hand button, and AI state indicator badge */
-      @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        };
 
-      #futuristic-mic-btn, #futuristic-hand-btn {
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-        position: relative !important;
-        overflow: hidden !important;
-        backdrop-filter: blur(8px) !important;
-        -webkit-backdrop-filter: blur(8px) !important;
+        const originalCreateElement = document.createElement;
+        document.createElement = function (tagName, options) {
+          const element = originalCreateElement.call(document, tagName, options);
+          if (tagName && tagName.toLowerCase() === 'audio') {
+            console.log('[early-audio] Intercepted document.createElement("audio")', element);
+            window.__audioElements.push(element);
+            if (typeof window.__onAudioCreated === 'function') {
+              window.__onAudioCreated(element);
+            }
+          }
+          return element;
+        };
+        console.log('[early-audio] Successfully installed audio monkeypatches');
+      } catch (e) {
+        console.error('[early-audio] Failed to install audio monkeypatches', e);
       }
+    })();
+  </script>
+  <script>
+    // Sanitize localStorage.modelInfo to avoid parse errors in the bundle.
+    try {
+      const raw = localStorage.getItem('modelInfo');
+      if (raw === null || raw === 'undefined') throw new Error('invalid');
+      JSON.parse(raw);
+    } catch (e) {
+      localStorage.setItem('modelInfo', JSON.stringify({ characters: [{ name: 'andry_3d', model_path: 'live3d-model/andry_3d/avatar_animasi.glb' }] }));
+    }
 
-      #futuristic-mic-btn:hover, #futuristic-hand-btn:hover {
-        transform: translateY(-4px) scale(1.05) !important;
-      }
-
-      #futuristic-mic-btn:active, #futuristic-hand-btn:active {
-        transform: translateY(1px) scale(0.98) !important;
-      }
-
-      /* Mic Button States */
-      #futuristic-mic-btn[data-micon="true"] {
-        background: rgba(0, 242, 254, 0.08) !important;
-        border: 2px solid #00f2fe !important;
-        box-shadow: 0 0 15px rgba(0, 242, 254, 0.5), inset 0 0 8px rgba(0, 242, 254, 0.2) !important;
-      }
-      #futuristic-mic-btn[data-micon="true"] svg {
-        fill: #00f2fe !important;
-        color: #00f2fe !important;
-        filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.6)) !important;
-      }
-      #futuristic-mic-btn[data-micon="true"]:hover {
-        background: rgba(0, 242, 254, 0.16) !important;
-        box-shadow: 0 0 25px rgba(0, 242, 254, 0.8), inset 0 0 12px rgba(0, 242, 254, 0.4) !important;
-      }
-
-      #futuristic-mic-btn[data-micon="false"] {
-        background: rgba(255, 8, 68, 0.08) !important;
-        border: 2px solid #ff0844 !important;
-        box-shadow: 0 0 15px rgba(255, 8, 68, 0.4), inset 0 0 8px rgba(255, 8, 68, 0.2) !important;
-      }
-      #futuristic-mic-btn[data-micon="false"] svg {
-        fill: #ff0844 !important;
-        color: #ff0844 !important;
-        filter: drop-shadow(0 0 4px rgba(255, 8, 68, 0.6)) !important;
-      }
-      #futuristic-mic-btn[data-micon="false"]:hover {
-        background: rgba(255, 8, 68, 0.16) !important;
-        box-shadow: 0 0 25px rgba(255, 8, 68, 0.7), inset 0 0 12px rgba(255, 8, 68, 0.4) !important;
-      }
-
-      /* Hand Button */
-      #futuristic-hand-btn {
-        background: rgba(248, 87, 166, 0.08) !important;
-        border: 2px solid #f857a6 !important;
-        box-shadow: 0 0 15px rgba(248, 87, 166, 0.4), inset 0 0 8px rgba(248, 87, 166, 0.2) !important;
-      }
-      #futuristic-hand-btn svg {
-        fill: #f857a6 !important;
-        color: #f857a6 !important;
-        filter: drop-shadow(0 0 4px rgba(248, 87, 166, 0.6)) !important;
-      }
-      #futuristic-hand-btn:hover {
-        background: rgba(248, 87, 166, 0.16) !important;
-        box-shadow: 0 0 25px rgba(248, 87, 166, 0.7), inset 0 0 12px rgba(248, 87, 166, 0.4) !important;
-      }
-
-      /* AI State Badge */
-      #futuristic-ai-badge {
-        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-        width: 120px !important;
-        height: 32px !important;
-        border-radius: 16px !important;
-        font-family: 'Share Tech Mono', monospace !important;
-        text-transform: uppercase !important;
-        font-weight: bold !important;
-        letter-spacing: 0.12em !important;
-        border: 2px solid rgba(255, 255, 255, 0.12) !important;
-        position: relative !important;
-        box-sizing: border-box !important;
-      }
-
-      #futuristic-ai-badge[data-state="idle"] {
-        background: rgba(16, 23, 41, 0.85) !important;
-        color: #8ab4ff !important;
-        border-color: rgba(138, 180, 255, 0.3) !important;
-        box-shadow: 0 0 12px rgba(138, 180, 255, 0.2), inset 0 0 8px rgba(138, 180, 255, 0.1) !important;
-      }
-
-      #futuristic-ai-badge[data-state="listening"] {
-        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%) !important;
-        color: #ffffff !important;
-        border-color: rgba(255, 255, 255, 0.3) !important;
-        animation: futuristic-pulse 2s infinite alternate !important;
-      }
-
-      #futuristic-ai-badge[data-state="thinking-speaking"] {
-        background: linear-gradient(135deg, #8a2387 0%, #e94057 50%, #f27121 100%) !important;
-        color: #ffffff !important;
-        border-color: rgba(255, 255, 255, 0.3) !important;
-        box-shadow: 0 0 15px rgba(233, 64, 87, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.2) !important;
-      }
-
-      #futuristic-ai-badge[data-state="loading"], #futuristic-ai-badge[data-state="waiting"] {
-        background: rgba(30, 41, 59, 0.9) !important;
-        color: #94a3b8 !important;
-        border-color: rgba(148, 163, 184, 0.3) !important;
-        box-shadow: 0 0 8px rgba(148, 163, 184, 0.15), inset 0 0 6px rgba(255, 255, 255, 0.05) !important;
-      }
-
-      #futuristic-ai-badge[data-state="interrupted"] {
-        background: linear-gradient(135deg, #ff0844 0%, #ff5252 100%) !important;
-        color: #ffffff !important;
-        border-color: rgba(255, 255, 255, 0.3) !important;
-        box-shadow: 0 0 15px rgba(255, 8, 68, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.2) !important;
-      }
-
-      /* Futuristic Text Area (Text Box) */
-      #futuristic-input {
-        background: rgba(15, 23, 42, 0.45) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
-        border: 2px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 16px !important;
-        color: #ffffff !important;
-        padding-left: 50px !important; /* Make room for the attach button */
-        padding-top: 25px !important;
-        font-family: 'Outfit', 'Inter', sans-serif !important;
-        transition: all 0.3s ease !important;
-      }
-
-      #futuristic-input:focus {
-        background: rgba(15, 23, 42, 0.6) !important;
-        border-color: #00f2fe !important;
-        box-shadow: 0 0 20px rgba(0, 242, 254, 0.25), inset 0 0 8px rgba(0, 242, 254, 0.1) !important;
-      }
-
-      #futuristic-input::placeholder {
-        color: rgba(255, 255, 255, 0.35) !important;
-      }
-
-      /* Futuristic Attach File Button */
-      #futuristic-attach-btn {
-        transition: all 0.3s ease !important;
-      }
-      #futuristic-attach-btn svg {
-        fill: #00f2fe !important;
-        color: #00f2fe !important;
-        filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.5)) !important;
-        transition: all 0.3s ease !important;
-      }
-      #futuristic-attach-btn:hover {
-        background: rgba(0, 242, 254, 0.1) !important;
-        transform: translateY(-50%) scale(1.1) !important;
-      }
-      #futuristic-attach-btn:hover svg {
-        filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.8)) !important;
-      }
-
-      /* Futuristic Toggle Button */
-      #futuristic-toggle-btn {
-        transition: all 0.3s ease !important;
-      }
-      #futuristic-toggle-btn svg {
-        fill: #00f2fe !important;
-        color: #00f2fe !important;
-        filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.5)) !important;
-        transition: all 0.3s ease !important;
-      }
-      #futuristic-toggle-btn:hover svg {
-        filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.8)) !important;
-      }
-
-      /* Futuristic WebSocket Status Badge */
-      #futuristic-ws-badge {
-        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-        width: 125px !important;
-        height: 32px !important;
-        border-radius: 16px !important;
-        font-family: 'Share Tech Mono', monospace !important;
-        text-transform: uppercase !important;
-        font-weight: bold !important;
-        letter-spacing: 0.1em !important;
-        border: 2px solid rgba(255, 255, 255, 0.12) !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        box-sizing: border-box !important;
-        backdrop-filter: blur(8px) !important;
-        -webkit-backdrop-filter: blur(8px) !important;
-      }
-
-      /* WS Status Badge Colors & Glows */
-      #futuristic-ws-badge[data-color="green.500"] {
-        background: rgba(0, 242, 254, 0.08) !important;
-        border-color: #00f2fe !important;
-        color: #00f2fe !important;
-        box-shadow: 0 0 15px rgba(0, 242, 254, 0.4), inset 0 0 8px rgba(0, 242, 254, 0.1) !important;
-      }
-
-      #futuristic-ws-badge[data-color="yellow.500"], #futuristic-ws-badge[data-color="orange.500"] {
-        background: rgba(255, 153, 102, 0.08) !important;
-        border-color: #ff9966 !important;
-        color: #ff9966 !important;
-        box-shadow: 0 0 15px rgba(255, 153, 102, 0.4), inset 0 0 8px rgba(255, 153, 102, 0.1) !important;
-        animation: futuristic-pulse 2s infinite alternate !important;
-      }
-
-      #futuristic-ws-badge[data-color="red.500"] {
-        background: rgba(255, 8, 68, 0.08) !important;
-        border-color: #ff0844 !important;
-        color: #ff0844 !important;
-        box-shadow: 0 0 15px rgba(255, 8, 68, 0.4), inset 0 0 8px rgba(255, 8, 68, 0.1) !important;
-      }
-
-      @keyframes futuristic-pulse {
-        0% {
-          box-shadow: 0 0 8px rgba(0, 242, 254, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.2);
-        }
-        100% {
-          box-shadow: 0 0 22px rgba(0, 242, 254, 0.8), inset 0 0 12px rgba(255, 255, 255, 0.4);
-          transform: scale(1.03);
+    // Reset stale backgroundUrl to ensure the new default_background.jpg is used
+    try {
+      const bgUrl = localStorage.getItem('backgroundUrl');
+      if (bgUrl) {
+        const parsed = JSON.parse(bgUrl);
+        if (typeof parsed === 'string' && (parsed.includes('default_background') || parsed.includes('default_background.jpg') || parsed.includes('default_background.jpg'))) {
+          localStorage.removeItem('backgroundUrl');
         }
       }
+    } catch (e) { }
+  </script>
+  <script>
+    // capture console calls for debugging
+    (function () {
+      window.__consoleLogs = window.__consoleLogs || [];
+      ['log', 'warn', 'error', 'info'].forEach((k) => {
+        const orig = console[k];
+        console[k] = function () {
+          try { window.__consoleLogs.push({ type: k, args: Array.from(arguments) }); } catch (e) { }
+          orig && orig.apply(console, arguments);
+        };
+      });
+    })();
+  </script>
+  <script src="/frontend-config.js"></script>
+  <script type="module" crossorigin src="./assets/main-nu7uwxNJ.js?v=20260703-new4"></script>
+  <link rel="stylesheet" crossorigin href="./assets/main-QEkl09-0.css?v=20260703-new4">
+  <style>
+    /* Futuristic styling for mic button, hand button, and AI state indicator badge */
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-      /* Futuristic blue theme panel overrides */
-      .cs-main-container,
-      .cs-chat-container,
-      .cs-message-list,
-      .cs-conversation-header,
-      .cs-message-input,
-      .cs-sidebar,
-      .cs-sidebar--left,
-      .cs-sidebar--right,
-      .cs-conversation,
-      .cs-expansion-panel,
-      .cs-expansion-panel__header,
-      .cs-expansion-panel__content,
-      .cs-status-list {
-        background-color: rgba(10, 20, 42, 0.65) !important;
-        background: linear-gradient(135deg, rgba(10, 20, 42, 0.7) 0%, rgba(5, 8, 22, 0.85) 100%) !important;
-        color: #00f2fe !important;
-        border-color: rgba(0, 242, 254, 0.15) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
+    #futuristic-mic-btn,
+    #futuristic-hand-btn {
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+      position: relative !important;
+      overflow: hidden !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+    }
+
+    #futuristic-mic-btn:hover,
+    #futuristic-hand-btn:hover {
+      transform: translateY(-4px) scale(1.05) !important;
+    }
+
+    #futuristic-mic-btn:active,
+    #futuristic-hand-btn:active {
+      transform: translateY(1px) scale(0.98) !important;
+    }
+
+    /* Mic Button States */
+    #futuristic-mic-btn[data-micon="true"] {
+      background: rgba(0, 242, 254, 0.08) !important;
+      border: 2px solid #00f2fe !important;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.5), inset 0 0 8px rgba(0, 242, 254, 0.2) !important;
+    }
+
+    #futuristic-mic-btn[data-micon="true"] svg {
+      fill: #00f2fe !important;
+      color: #00f2fe !important;
+      filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.6)) !important;
+    }
+
+    #futuristic-mic-btn[data-micon="true"]:hover {
+      background: rgba(0, 242, 254, 0.16) !important;
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.8), inset 0 0 12px rgba(0, 242, 254, 0.4) !important;
+    }
+
+    #futuristic-mic-btn[data-micon="false"] {
+      background: rgba(255, 8, 68, 0.08) !important;
+      border: 2px solid #ff0844 !important;
+      box-shadow: 0 0 15px rgba(255, 8, 68, 0.4), inset 0 0 8px rgba(255, 8, 68, 0.2) !important;
+    }
+
+    #futuristic-mic-btn[data-micon="false"] svg {
+      fill: #ff0844 !important;
+      color: #ff0844 !important;
+      filter: drop-shadow(0 0 4px rgba(255, 8, 68, 0.6)) !important;
+    }
+
+    #futuristic-mic-btn[data-micon="false"]:hover {
+      background: rgba(255, 8, 68, 0.16) !important;
+      box-shadow: 0 0 25px rgba(255, 8, 68, 0.7), inset 0 0 12px rgba(255, 8, 68, 0.4) !important;
+    }
+
+    /* Hand Button */
+    #futuristic-hand-btn {
+      background: rgba(248, 87, 166, 0.08) !important;
+      border: 2px solid #f857a6 !important;
+      box-shadow: 0 0 15px rgba(248, 87, 166, 0.4), inset 0 0 8px rgba(248, 87, 166, 0.2) !important;
+    }
+
+    #futuristic-hand-btn svg {
+      fill: #f857a6 !important;
+      color: #f857a6 !important;
+      filter: drop-shadow(0 0 4px rgba(248, 87, 166, 0.6)) !important;
+    }
+
+    #futuristic-hand-btn:hover {
+      background: rgba(248, 87, 166, 0.16) !important;
+      box-shadow: 0 0 25px rgba(248, 87, 166, 0.7), inset 0 0 12px rgba(248, 87, 166, 0.4) !important;
+    }
+
+    /* AI State Badge */
+    #futuristic-ai-badge {
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+      width: 120px !important;
+      height: 32px !important;
+      border-radius: 16px !important;
+      font-family: 'Share Tech Mono', monospace !important;
+      text-transform: uppercase !important;
+      font-weight: bold !important;
+      letter-spacing: 0.12em !important;
+      border: 2px solid rgba(255, 255, 255, 0.12) !important;
+      position: relative !important;
+      box-sizing: border-box !important;
+    }
+
+    #futuristic-ai-badge[data-state="idle"] {
+      background: rgba(16, 23, 41, 0.85) !important;
+      color: #8ab4ff !important;
+      border-color: rgba(138, 180, 255, 0.3) !important;
+      box-shadow: 0 0 12px rgba(138, 180, 255, 0.2), inset 0 0 8px rgba(138, 180, 255, 0.1) !important;
+    }
+
+    #futuristic-ai-badge[data-state="listening"] {
+      background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%) !important;
+      color: #ffffff !important;
+      border-color: rgba(255, 255, 255, 0.3) !important;
+      animation: futuristic-pulse 2s infinite alternate !important;
+    }
+
+    #futuristic-ai-badge[data-state="thinking-speaking"] {
+      background: linear-gradient(135deg, #8a2387 0%, #e94057 50%, #f27121 100%) !important;
+      color: #ffffff !important;
+      border-color: rgba(255, 255, 255, 0.3) !important;
+      box-shadow: 0 0 15px rgba(233, 64, 87, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.2) !important;
+    }
+
+    #futuristic-ai-badge[data-state="loading"],
+    #futuristic-ai-badge[data-state="waiting"] {
+      background: rgba(30, 41, 59, 0.9) !important;
+      color: #94a3b8 !important;
+      border-color: rgba(148, 163, 184, 0.3) !important;
+      box-shadow: 0 0 8px rgba(148, 163, 184, 0.15), inset 0 0 6px rgba(255, 255, 255, 0.05) !important;
+    }
+
+    #futuristic-ai-badge[data-state="interrupted"] {
+      background: linear-gradient(135deg, #ff0844 0%, #ff5252 100%) !important;
+      color: #ffffff !important;
+      border-color: rgba(255, 255, 255, 0.3) !important;
+      box-shadow: 0 0 15px rgba(255, 8, 68, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.2) !important;
+    }
+
+    /* Futuristic Text Area (Text Box) */
+    #futuristic-input {
+      background: rgba(15, 23, 42, 0.45) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      border: 2px solid rgba(255, 255, 255, 0.08) !important;
+      border-radius: 16px !important;
+      color: #ffffff !important;
+      padding-left: 50px !important;
+      /* Make room for the attach button */
+      padding-top: 25px !important;
+      font-family: 'Outfit', 'Inter', sans-serif !important;
+      transition: all 0.3s ease !important;
+    }
+
+    #futuristic-input:focus {
+      background: rgba(15, 23, 42, 0.6) !important;
+      border-color: #00f2fe !important;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.25), inset 0 0 8px rgba(0, 242, 254, 0.1) !important;
+    }
+
+    #futuristic-input::placeholder {
+      color: rgba(255, 255, 255, 0.35) !important;
+    }
+
+    /* Futuristic Attach File Button */
+    #futuristic-attach-btn {
+      transition: all 0.3s ease !important;
+    }
+
+    #futuristic-attach-btn svg {
+      fill: #00f2fe !important;
+      color: #00f2fe !important;
+      filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.5)) !important;
+      transition: all 0.3s ease !important;
+    }
+
+    #futuristic-attach-btn:hover {
+      background: rgba(0, 242, 254, 0.1) !important;
+      transform: translateY(-50%) scale(1.1) !important;
+    }
+
+    #futuristic-attach-btn:hover svg {
+      filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.8)) !important;
+    }
+
+    /* Futuristic Toggle Button */
+    #futuristic-toggle-btn {
+      transition: all 0.3s ease !important;
+    }
+
+    #futuristic-toggle-btn svg {
+      fill: #00f2fe !important;
+      color: #00f2fe !important;
+      filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.5)) !important;
+      transition: all 0.3s ease !important;
+    }
+
+    #futuristic-toggle-btn:hover svg {
+      filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.8)) !important;
+    }
+
+    /* Futuristic WebSocket Status Badge */
+    #futuristic-ws-badge {
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+      width: 125px !important;
+      height: 32px !important;
+      border-radius: 16px !important;
+      font-family: 'Share Tech Mono', monospace !important;
+      text-transform: uppercase !important;
+      font-weight: bold !important;
+      letter-spacing: 0.1em !important;
+      border: 2px solid rgba(255, 255, 255, 0.12) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+    }
+
+    /* WS Status Badge Colors & Glows */
+    #futuristic-ws-badge[data-color="green.500"] {
+      background: rgba(0, 242, 254, 0.08) !important;
+      border-color: #00f2fe !important;
+      color: #00f2fe !important;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.4), inset 0 0 8px rgba(0, 242, 254, 0.1) !important;
+    }
+
+    #futuristic-ws-badge[data-color="yellow.500"],
+    #futuristic-ws-badge[data-color="orange.500"] {
+      background: rgba(255, 153, 102, 0.08) !important;
+      border-color: #ff9966 !important;
+      color: #ff9966 !important;
+      box-shadow: 0 0 15px rgba(255, 153, 102, 0.4), inset 0 0 8px rgba(255, 153, 102, 0.1) !important;
+      animation: futuristic-pulse 2s infinite alternate !important;
+    }
+
+    #futuristic-ws-badge[data-color="red.500"] {
+      background: rgba(255, 8, 68, 0.08) !important;
+      border-color: #ff0844 !important;
+      color: #ff0844 !important;
+      box-shadow: 0 0 15px rgba(255, 8, 68, 0.4), inset 0 0 8px rgba(255, 8, 68, 0.1) !important;
+    }
+
+    @keyframes futuristic-pulse {
+      0% {
+        box-shadow: 0 0 8px rgba(0, 242, 254, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.2);
       }
 
-      /* Non-active list items hover/active state */
-      .cs-conversation:hover {
-        background-color: rgba(0, 242, 254, 0.1) !important;
+      100% {
+        box-shadow: 0 0 22px rgba(0, 242, 254, 0.8), inset 0 0 12px rgba(255, 255, 255, 0.4);
+        transform: scale(1.03);
       }
-      .cs-conversation.cs-conversation--active {
-        background-color: rgba(0, 242, 254, 0.18) !important;
-        color: #00f2fe !important;
+    }
+
+    /* Futuristic blue theme panel overrides */
+    .cs-main-container,
+    .cs-chat-container,
+    .cs-message-list,
+    .cs-conversation-header,
+    .cs-message-input,
+    .cs-sidebar,
+    .cs-sidebar--left,
+    .cs-sidebar--right,
+    .cs-conversation,
+    .cs-expansion-panel,
+    .cs-expansion-panel__header,
+    .cs-expansion-panel__content,
+    .cs-status-list {
+      background-color: rgba(10, 20, 42, 0.65) !important;
+      background: linear-gradient(135deg, rgba(10, 20, 42, 0.7) 0%, rgba(5, 8, 22, 0.85) 100%) !important;
+      color: #00f2fe !important;
+      border-color: rgba(0, 242, 254, 0.15) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+    }
+
+    /* Non-active list items hover/active state */
+    .cs-conversation:hover {
+      background-color: rgba(0, 242, 254, 0.1) !important;
+    }
+
+    .cs-conversation.cs-conversation--active {
+      background-color: rgba(0, 242, 254, 0.18) !important;
+      color: #00f2fe !important;
+    }
+
+    /* Chat bubble styling matching the futuristic canvas background */
+    .cs-message--incoming .cs-message__content {
+      background-color: rgba(0, 242, 254, 0.12) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(0, 242, 254, 0.35) !important;
+      box-shadow: 0 0 12px rgba(0, 242, 254, 0.2) !important;
+    }
+
+    .cs-message--outgoing .cs-message__content {
+      background-color: rgba(248, 87, 166, 0.15) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(248, 87, 166, 0.35) !important;
+      box-shadow: 0 0 12px rgba(248, 87, 166, 0.2) !important;
+    }
+
+    /* Text color fixes for text nodes */
+    .cs-conversation__name,
+    .cs-conversation-header__user-name,
+    .cs-message__sender-name {
+      color: #00f2fe !important;
+      font-family: 'Share Tech Mono', monospace !important;
+    }
+
+    .cs-conversation__info,
+    .cs-conversation-header__info,
+    .cs-message__sent-time {
+      color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    .cs-message__content {
+      color: #ffffff !important;
+    }
+
+    /* Neon Box style for all buttons and icons in frontend */
+    .cs-button,
+    .cs-message-input__tools button,
+    .cs-conversation-header__actions button,
+    .cs-message-input__tools .cs-button {
+      border: 1.5px solid #00f2fe !important;
+      background: rgba(0, 242, 254, 0.08) !important;
+      box-shadow: 0 0 8px rgba(0, 242, 254, 0.5), inset 0 0 4px rgba(0, 242, 254, 0.25) !important;
+      border-radius: 6px !important;
+      transition: all 0.2s ease-in-out !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .cs-button:hover,
+    .cs-message-input__tools button:hover,
+    .cs-conversation-header__actions button:hover {
+      background: rgba(0, 242, 254, 0.2) !important;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.9), inset 0 0 6px rgba(0, 242, 254, 0.4) !important;
+      transform: scale(1.05);
+    }
+
+    /* Make SVG icons glow like neon lights */
+    .cs-button svg,
+    button svg,
+    .svg-inline--fa,
+    svg {
+      color: #00f2fe !important;
+      filter: drop-shadow(0 0 2px #00f2fe) drop-shadow(0 0 5px #00f2fe) !important;
+    }
+
+    /* Animated Neon Gradient Background override */
+    body,
+    html {
+      background: linear-gradient(-45deg, #0a1128, #120e2e, #005f73, #0a1128, #3d0066) !important;
+      background-size: 400% 400% !important;
+      animation: gradientFlow 15s ease infinite !important;
+      height: 100vh !important;
+      overflow: hidden !important;
+    }
+
+    @keyframes gradientFlow {
+      0% {
+        background-position: 0% 50%;
       }
 
-      /* Chat bubble styling matching the futuristic canvas background */
-      .cs-message--incoming .cs-message__content {
-        background-color: rgba(0, 242, 254, 0.12) !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(0, 242, 254, 0.35) !important;
-        box-shadow: 0 0 12px rgba(0, 242, 254, 0.2) !important;
-      }
-      .cs-message--outgoing .cs-message__content {
-        background-color: rgba(248, 87, 166, 0.15) !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(248, 87, 166, 0.35) !important;
-        box-shadow: 0 0 12px rgba(248, 87, 166, 0.2) !important;
+      50% {
+        background-position: 100% 50%;
       }
 
-      /* Text color fixes for text nodes */
-      .cs-conversation__name,
-      .cs-conversation-header__user-name,
-      .cs-message__sender-name {
-        color: #00f2fe !important;
-        font-family: 'Share Tech Mono', monospace !important;
+      100% {
+        background-position: 0% 50%;
       }
-      .cs-conversation__info,
-      .cs-conversation-header__info,
-      .cs-message__sent-time {
-        color: rgba(255, 255, 255, 0.6) !important;
-      }
-      .cs-message__content {
-        color: #ffffff !important;
-      }
+    }
+  </style>
+</head>
 
-      /* Neon Box style for all buttons and icons in frontend */
-      .cs-button, 
-      .cs-message-input__tools button,
-      .cs-conversation-header__actions button,
-      .cs-message-input__tools .cs-button {
-        border: 1.5px solid #00f2fe !important;
-        background: rgba(0, 242, 254, 0.08) !important;
-        box-shadow: 0 0 8px rgba(0, 242, 254, 0.5), inset 0 0 4px rgba(0, 242, 254, 0.25) !important;
-        border-radius: 6px !important;
-        transition: all 0.2s ease-in-out !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-      }
-      
-      .cs-button:hover, 
-      .cs-message-input__tools button:hover,
-      .cs-conversation-header__actions button:hover {
-        background: rgba(0, 242, 254, 0.2) !important;
-        box-shadow: 0 0 15px rgba(0, 242, 254, 0.9), inset 0 0 6px rgba(0, 242, 254, 0.4) !important;
-        transform: scale(1.05);
-      }
+<body>
+  <div id="root"></div>
+  <script type="module" src="./avatar3d-overlay.js"></script>
+</body>
 
-      /* Make SVG icons glow like neon lights */
-      .cs-button svg, 
-      button svg, 
-      .svg-inline--fa, 
-      svg {
-        color: #00f2fe !important;
-        filter: drop-shadow(0 0 2px #00f2fe) drop-shadow(0 0 5px #00f2fe) !important;
-      }
-
-      /* Animated Neon Gradient Background override */
-      body, html {
-        background: linear-gradient(-45deg, #0a1128, #120e2e, #005f73, #0a1128, #3d0066) !important;
-        background-size: 400% 400% !important;
-        animation: gradientFlow 15s ease infinite !important;
-        height: 100vh !important;
-        overflow: hidden !important;
-      }
-
-      @keyframes gradientFlow {
-        0% {
-          background-position: 0% 50%;
-        }
-        50% {
-          background-position: 100% 50%;
-        }
-        100% {
-          background-position: 0% 50%;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div id="root"></div>
-    <script type="module" src="./avatar3d-overlay.js"></script>
-  </body>
 </html>

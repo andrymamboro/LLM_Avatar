@@ -155,6 +155,11 @@ class WebSocketServer:
             name="backgrounds_jpg",
         )
         self.app.mount(
+            "/backgrounds",
+            CORSStaticFiles(directory="backgrounds"),
+            name="backgrounds_dir",
+        )
+        self.app.mount(
             "/avatars",
             AvatarStaticFiles(directory="avatars"),
             name="avatars",

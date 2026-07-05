@@ -4,6 +4,7 @@
 /backgrounds/*
 !/backgrounds/README.md
 !/backgrounds/ceiling-window-room-night.jpeg
+!/backgrounds/default_background.jpg
 
 # ignore non-default live2d models
 /live2d-models/*
