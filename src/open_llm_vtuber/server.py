@@ -109,6 +109,13 @@ class WebSocketServer:
             init_webtool_routes(default_context_cache=self.default_context_cache),
         )
 
+        @self.app.get("/frontend-config.js")
+        async def get_frontend_config():
+            ws_url = getattr(self.config.system_config, "frontend_ws_url", "")
+            base_url = getattr(self.config.system_config, "frontend_base_url", "")
+            js_content = f'window.FRONTEND_CONFIG = {{ wsUrl: "{ws_url}", baseUrl: "{base_url}" }};'
+            return Response(content=js_content, media_type="application/javascript")
+
         # Initialize and include proxy routes if proxy is enabled
         system_config = config.system_config
         if hasattr(system_config, "enable_proxy") and system_config.enable_proxy:

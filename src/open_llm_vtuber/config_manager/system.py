@@ -13,6 +13,8 @@ class SystemConfig(I18nMixin):
     config_alts_dir: str = Field(..., alias="config_alts_dir")
     tool_prompts: Dict[str, str] = Field(..., alias="tool_prompts")
     enable_proxy: bool = Field(False, alias="enable_proxy")
+    frontend_ws_url: str = Field("", alias="frontend_ws_url")
+    frontend_base_url: str = Field("", alias="frontend_base_url")
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "conf_version": Description(en="Configuration version", zh="配置文件版本"),
@@ -27,7 +29,13 @@ class SystemConfig(I18nMixin):
         ),
         "enable_proxy": Description(
             en="Enable proxy mode for multiple clients",
-            zh="启用代理模式以支持多个客户端使用一个 ws 连接",
+            zh="启用代理模式以支持多个客户端使用一個 ws 连接",
+        ),
+        "frontend_ws_url": Description(
+            en="Custom frontend WebSocket URL", zh="自定义前端 WebSocket URL"
+        ),
+        "frontend_base_url": Description(
+            en="Custom frontend Base URL", zh="自定义前端 Base URL"
         ),
     }
 

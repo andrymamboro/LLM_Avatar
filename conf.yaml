@@ -3,6 +3,9 @@ system_config:
   conf_version: 'v1.2.1'
   host: 'localhost' # use 0.0.0.0 if you want other devices to access this page
   port: 12393
+  # Custom frontend connection overrides (leave blank to auto-detect based on browser URL)
+  frontend_ws_url: ''
+  frontend_base_url: ''
   # New setting for alternative configurations
   config_alts_dir: 'characters'
   # Tool prompts that will be appended to the persona prompt
@@ -457,7 +460,7 @@ character_config:
     
     cartesia_tts:
       api_key: '${CARTESIA_API_KEY}'
-      voice_id: '72a1dea2-302f-4f6b-8936-e28f8d1a51ba' # Voice ID from Cartesia
+      voice_id: '272acf86-0aa3-4d83-b508-6fbfb83be924' # Voice ID from Cartesia
       model_id: 'sonic-3' # Model ID (e.g., sonic-3)
       output_format: 'wav' # Output audio format (e.g., wav)
       language: 'id' # Output language of voice (e.g., en)
