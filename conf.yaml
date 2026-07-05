@@ -4,8 +4,8 @@ system_config:
   host: 'localhost' # use 0.0.0.0 if you want other devices to access this page
   port: 12393
   # Custom frontend connection overrides (leave blank to auto-detect based on browser URL)
-  frontend_ws_url: ''
-  frontend_base_url: ''
+  frontend_ws_url: 'wss://andrymamboro-llm-avatar.hf.space'
+  frontend_base_url: 'https://andrymamboro-llm-avatar.hf.space'
   # New setting for alternative configurations
   config_alts_dir: 'characters'
   # Tool prompts that will be appended to the persona prompt
