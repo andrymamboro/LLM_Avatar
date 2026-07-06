@@ -10,6 +10,7 @@ import os
 import shutil
 
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 from starlette.staticfiles import StaticFiles as StarletteStaticFiles
@@ -48,6 +49,13 @@ class CORSStaticFiles(StarletteStaticFiles):
             response.headers["Content-Type"] = "application/wasm"
         elif path.endswith(".onnx"):
             response.headers["Content-Type"] = "application/octet-stream"
+
+        # Add caching headers for static assets
+        if path.endswith((".glb", ".vrm", ".wasm", ".onnx")):
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        elif path.endswith((".jpg", ".jpeg", ".png", ".gif", ".css", ".js")):
+            if "frontend-config.js" not in path and "avatar-config.js" not in path:
+                response.headers["Cache-Control"] = "public, max-age=86400"
 
         return response
 
@@ -98,6 +106,12 @@ class WebSocketServer:
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
+        )
+
+        # Add Gzip middleware to compress large assets (like GLB files) during transfer
+        self.app.add_middleware(
+            GZipMiddleware,
+            minimum_size=1000,
         )
 
         # Include routes, passing the context instance
